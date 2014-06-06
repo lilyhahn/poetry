@@ -5,18 +5,22 @@ class PoetryBot{
   float level;
   float frequency;
   float threshold;
-  float timesincewrite;
+  int time;
+  int wait = 15000; // 15 seconds;
+  int servotime;
+  int servowait = 1500;
   LED volumeLED;
   Boolean talking = false;
-  LegoNXT nxt;
-  PoetryBot(PitchDetectorFFT a, float t, Arduino ar, AudioSource m, LegoNXT n){
+  Boolean flowerOpen = false;
+  PoetryBot(PitchDetectorFFT a, float t, Arduino ar, AudioSource m){
     audioAnalysis = a;
     threshold = t;
     arduino = ar;
     mic = m;
-    timesincewrite = millis();
-    volumeLED = new LED(12, 0, ColorType.RED, arduino);
-    nxt = n;
+    time = millis();
+    servotime = millis();
+    volumeLED = new LED(0, ColorType.BLUE, arduino);
+    arduino.pinMode(9, Arduino.SERVO);
   }
   public void botLoop(){
     level = mic.GetLevel();
@@ -25,9 +29,31 @@ class PoetryBot{
     volumeLED.SetBrightness(round((level) * 255));
     if(level > threshold && !talking){
       talking = true;
+      if(!flowerOpen){
+        arduino.servoWrite(9,60);
+        servotime = millis();
+        flowerOpen = true;
+      }
     }
     if(level < threshold && talking){
      talking = false; 
+    }
+    if(millis() - servotime >= servowait){
+      arduino.analogWrite(9,0);
+      servotime = millis();
+    }
+    if(millis() - time >= wait){
+      ColorType c = volumeLED.GetColor();
+      if(c == ColorType.RED){
+       volumeLED.SetColor(ColorType.BLUE); 
+      }
+      else if(c == ColorType.BLUE){
+       volumeLED.SetColor(ColorType.GREEN);
+      }
+      else if(c == ColorType.GREEN){
+       volumeLED.SetColor(ColorType.RED);
+      }
+      time = millis();
     }
   }
 };

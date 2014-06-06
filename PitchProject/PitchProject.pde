@@ -75,7 +75,7 @@ void setup()
   AS.SetListener(PD);
   TG = new ToneGenerator (minim, AS.GetSampleRate());
   
-  robot = new PoetryBot(PD, 0,new Arduino(this, Arduino.list()[0], 57600), AS, new LegoNXT(this, );
+  robot = new PoetryBot(PD, 0.1,new Arduino(this, Arduino.list()[0], 57600), AS);
 
   rectMode(CORNERS);
   background(0);

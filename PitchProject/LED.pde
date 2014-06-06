@@ -5,6 +5,16 @@ class LED{
   Arduino arduino;
   public void SetColor(ColorType col){
     Color = col;
+    arduino.analogWrite(pin, 0);
+    if(Color == ColorType.RED){
+        pin = 12;
+    }
+    else if(Color == ColorType.BLUE){
+        pin = 11;
+    }
+    else if(Color == ColorType.GREEN){
+        pin = 10;
+    }
   }
   public ColorType GetColor(){
     return Color;
@@ -16,11 +26,11 @@ class LED{
   public int GetBrightness(){
    return brightness; 
   }
-  LED(int p, int b, ColorType c, Arduino a){
-    pin = p;
-    Color = c;
-    brightness = b;
+  LED(int b, ColorType c, Arduino a){
     arduino = a;
+    Color = c;
+    SetColor(c);
+    brightness = b;
     arduino.analogWrite(pin, brightness);
   }
 }
